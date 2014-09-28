@@ -35,5 +35,94 @@ str(agenda_corpus[1])
 inspect(agenda_corpus[c(1, 4, 5)])
 ```
 
-# 
+# Tranformations and filtering
+- It is important to remove some content, such as
+  punctuation, letter case, certain words, etc.
+- what transformations are available?
 
+```{r}
+getTransformations()
+```
+
+- Makes sense, except stem.
+  [What's that?](http://en.wikipedia.org/wiki/Stemming). Oh,
+  so reduce a compound or derivative words to their base.
+  So, e.g. "computing", "computers", "computation", etc may
+  be identified as "compute". Not a great example, since
+  compute and computer are rather different. Digress.
+- Undigress, that highlights that one should be familiar
+  with the stemming algorithm. I'll assume it's OK for this
+  exercise.
+
+```{r}
+suppressPackageStartupMessages(library(SnowballC))
+agenda_corpus <- tm_map(agenda_corpus, removeWords, stopwords())
+agenda_corpus <- tm_map(agenda_corpus, removePunctuation)
+agenda_corpus <- tm_map(agenda_corpus, removeNumbers)
+agenda_corpus <- tm_map(agenda_corpus, stripWhitespace)
+agenda_corpus <- tm_map(agenda_corpus, stemDocument)
+```
+
+- future project, pertaining to org specifically, is add
+  custom transformations, e.g.
+
+```{r, eval=FALSE}
+# although this is the same as removeWords transformation
+for (j in seq(docs)){
+  docs[[j]]<-gsub("TODO"," ", docs[[j]])
+  docs[[j]]<-gsub("NEXT"," ", docs[[j]])
+  docs[[j]]<-gsub("DONE"," ", docs[[j]])
+}
+```
+
+# Create document term matrix
+- Here's how to imagine a document term matrix
+| doc      | word1  | word2 | ... | wordN |
+|--------- | -------|-------|-----|-------|
+| doc1.txt | freq11 | freq12| ... | freq1N|
+| doc2.txt | freq21 | freq22| ... | freq2N|
+|    .     |   .    |    .  |  .  |   .   |
+|    .     |   .    |    .  |  .  |   .   |
+|    .     |   .    |    .  |  .  |   .   |
+| docn.txt | freqn1 | freqn2| ... | freqnN|
+
+```{r}
+org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
+str(org_doc_term_matrix)
+inspect(org_doc_term_matrix[, 1:10])
+```
+- hmm, would be nice to see most frequent terms.
+
+# Examine document term matrix
+
+```{r}
+org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
+org_term_order <- order(org_term_freq)
+org_term_freq[tail(org_term_order)]
+```
+- the org mode todo items are common. Blimey, ive done a lot.
+- It might be intersting to remove them, but it also
+  indicates the actionability of my work. Identify tasks and
+  execute.
+- more examining reveals many other semi-useless workds in
+  top 50+ words
+
+```{r}
+findFreqTerms(org_doc_term_matrix, lowfreq=1000)
+findFreqTerms(org_doc_term_matrix, lowfreq=100)
+findFreqTerms(org_doc_term_matrix, lowfreq=10)
+```
+
+- can also examine word associations, plot associations,
+
+# Plot wordcloud
+
+- I had issues isntalling wordcloud. Github worked, my cran
+  mirror (Rstudio) didn't.
+
+```{r}
+library("wordcloud")
+# set seed so cloud layout fixed
+set.seed(1945)
+wordcloud(names(org_term_freq), org_term_freq, min.freq=40)
+```
