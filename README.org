@@ -8,11 +8,12 @@ about it only execute it.'.
 
 This will work more widely, on any text corpus. 
 
+
 * Create org file for notes
   - shortcut to insert code block demarcaters is C-c C-v d
 
 #+begin_src sh
-touch setup.org
+touch README.org
 #+end_src
 
 
@@ -34,7 +35,6 @@ touch analysis.Rmd
   - commit and push
 
 #+begin_src sh
-echo '*.md' >> .gitignore
 echo 'data/*' >> .gitignore
 # git remote add origin git@github.com:jo-tham/org_text_miner.git
 # git push -u origin master
@@ -62,6 +62,7 @@ ls -a ~/projects/9999-99-99_master_text_miner/data
 | reading.org      |
 | website.org      |
 |------------------|
+
 
 * References/acknowledgements
   - [[https://gist.github.com/jnrbsn/708961][GPL-3 markdown]]
