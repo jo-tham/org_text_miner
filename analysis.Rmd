@@ -77,14 +77,14 @@ for (j in seq(docs)){
 
 # Create document term matrix
 - Here's how to imagine a document term matrix
-| doc      | word1  | word2 | ... | wordN |
-|--------- | -------|-------|-----|-------|
-| doc1.txt | freq11 | freq12| ... | freq1N|
-| doc2.txt | freq21 | freq22| ... | freq2N|
-|    .     |   .    |    .  |  .  |   .   |
-|    .     |   .    |    .  |  .  |   .   |
-|    .     |   .    |    .  |  .  |   .   |
-| docn.txt | freqn1 | freqn2| ... | freqnN|
+ doc      | word1  | word2 | ... | wordN 
+--------- | -------|-------|-----|-------
+ doc1.txt | freq11 | freq12| ... | freq1N
+ doc2.txt | freq21 | freq22| ... | freq2N
+    .     |   .    |    .  |  .  |   .   
+    .     |   .    |    .  |  .  |   .   
+    .     |   .    |    .  |  .  |   .   
+ docn.txt | freqn1 | freqn2| ... | freqnN
 
 ```{r}
 org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
@@ -98,7 +98,12 @@ inspect(org_doc_term_matrix[, 1:10])
 ```{r}
 org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
 org_term_order <- order(org_term_freq)
-org_term_freq[tail(org_term_order)]
+org_terms <- names(org_term_freq[tail(org_term_order, n=25L)])
+org_terms
+agenda_corpus_xorg <- tm_map(agenda_corpus, removeWords,
+                             org_terms)
+proj_doc_term_matrix <- DocumentTermMatrix(agenda_corpus_xorg)
+proj_term_freq <- colSums(as.matrix(proj_doc_term_matrix))
 ```
 - the org mode todo items are common. Blimey, ive done a lot.
 - It might be intersting to remove them, but it also
@@ -108,9 +113,9 @@ org_term_freq[tail(org_term_order)]
   top 50+ words
 
 ```{r}
-findFreqTerms(org_doc_term_matrix, lowfreq=1000)
-findFreqTerms(org_doc_term_matrix, lowfreq=100)
-findFreqTerms(org_doc_term_matrix, lowfreq=10)
+findFreqTerms(proj_doc_term_matrix, lowfreq=1000)
+findFreqTerms(proj_doc_term_matrix, lowfreq=100)
+findFreqTerms(proj_doc_term_matrix, lowfreq=10)
 ```
 
 - can also examine word associations, plot associations,
@@ -124,5 +129,12 @@ findFreqTerms(org_doc_term_matrix, lowfreq=10)
 library("wordcloud")
 # set seed so cloud layout fixed
 set.seed(1945)
-wordcloud(names(org_term_freq), org_term_freq, min.freq=40)
+wordcloud(names(proj_term_freq), proj_term_freq,
+          min.freq=40,
+          colors=brewer.pal(6,"Dark2"))
 ```
+
+# References
+- http://onepager.togaware.com/TextMiningO.pdf
+- http://cran.r-project.org/web/packages/tm/vignettes/tm.pdf
+- 

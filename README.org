@@ -1,3 +1,7 @@
+* TODO Items [0/1]
+  - [ ] removeWords not working. wrong argument? trying to
+    remove common organizational words
+
 * Background
 I implement something like GTD ('getting things done')
 personal organization system with EMACS Org mode. I thought
