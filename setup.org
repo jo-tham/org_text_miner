@@ -1,0 +1,52 @@
+* Create org file for notes
+  - shortcut to insert code block demarcaters is C-c C-v d
+
+#+begin_src sh
+touch setup.org
+#+end_src
+
+
+* Setup data and readme
+  - /data for data (in my case, symlinks to org files)
+  - README.rmd
+
+#+begin_src sh
+mkdir data
+touch analysis.Rmd
+#+end_src
+
+
+* Setup git
+  - initialize
+  - create remote repo
+  - setup gitignore
+#+begin_src sh
+echo '*.md' >> .gitignore
+echo 'data/*' >> .gitignore
+#+end_src
+
+  - set upstream remote
+  - commit and push
+
+
+* Next step
+  - symlink to all org files
+    - in the future could do all org files on machine
+    - even do all org files on machine into the
+      corresponding subdirs from root and build the corpus 
+
+#+begin_src sh
+ln -s ~/projects/9999-99-99_master/*.org ~/projects/9999-99-99_master_text_miner/data
+ls -a ~/projects/9999-99-99_master_text_miner/data
+#+end_src
+
+#+RESULTS:
+|------------------|
+| computing.org    |
+| fynanse.org      |
+| personal.org     |
+| physical.org     |
+| professional.org |
+| reading.org      |
+| website.org      |
+|------------------|
