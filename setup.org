@@ -1,3 +1,13 @@
+* Background
+I implement something like GTD ('getting things done')
+personal organization system with EMACS Org mode. I thought
+it'd be useful to mine my agenda files for a summary of what
+I'm usually up to. Because when asked, I always think,
+'well, I dunno - it's in my EMACS. I don't have to think
+about it only execute it.'. 
+
+This will work more widely, on any text corpus. 
+
 * Create org file for notes
   - shortcut to insert code block demarcaters is C-c C-v d
 
@@ -20,13 +30,15 @@ touch analysis.Rmd
   - initialize
   - create remote repo
   - setup gitignore
+  - set upstream remote
+  - commit and push
+
 #+begin_src sh
 echo '*.md' >> .gitignore
 echo 'data/*' >> .gitignore
+# git remote add origin git@github.com:jo-tham/org_text_miner.git
+# git push -u origin master
 #+end_src
-
-  - set upstream remote
-  - commit and push
 
 
 * Next step
@@ -50,3 +62,6 @@ ls -a ~/projects/9999-99-99_master_text_miner/data
 | reading.org      |
 | website.org      |
 |------------------|
+
+* References/acknowledgements
+  - [[https://gist.github.com/jnrbsn/708961][GPL-3 markdown]]
