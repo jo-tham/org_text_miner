@@ -6,7 +6,9 @@ I'm usually up to. Because when asked, I always think,
 'well, I dunno - it's in my EMACS. I don't have to think
 about it only execute it.'. 
 
-This will work more widely, on any text corpus. 
+This will work more widely, on any text corpus. But perhaps
+I'll author an R package to do some operations on org agenda
+files for meaningful text mining after.
 
 
 * Create org file for notes

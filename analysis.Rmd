@@ -1,0 +1,39 @@
+# Get required packages
+
+```{r, eval=FALSE}
+install.packages('tm')
+help(package="tm")
+```
+
+# Setup corpus
+
+- At this point I became frustrated with the CamlCase
+  inconsistencies
+
+```{r}
+suppressPackageStartupMessages(library(tm))
+project_dir <- "~/projects/9999-99-99_master_text_miner"
+setwd(project_dir)
+org_dir <- "~/projects/9999-99-99_master_text_miner/data"
+org_dir_source <- DirSource(org_dir)
+agenda_corpus <- VCorpus(x=org_dir_source,
+                         readerControl=
+                             list(reader = reader(org_dir_source),
+                                  language = "en"))
+```
+
+# Inspect the corpus
+
+- Structure of the corpus object
+
+```{r}
+typeof(agenda_corpus)
+str(agenda_corpus[1])
+```
+
+```{r, eval=FALSE}
+inspect(agenda_corpus[c(1, 4, 5)])
+```
+
+# 
+
