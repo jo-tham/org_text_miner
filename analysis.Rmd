@@ -151,40 +151,40 @@ wordcloud(names(org_term_freq[head(org_term_order,
 # Again, for each agenda file
 
 ```{r}
-setwd("data")
-org_files <- dir()
-corp_to_wordcloud <- function(source_file){
-    my_source <- readPlain(list("content"=source_file),
-                           language="en", id="id")
-    agenda_corpus <- VCorpus(x=my_source,
-                             readerControl=
-                                 list(reader = reader(my_source),
-                                      language = "en"))
-    agenda_corpus <- tm_map(agenda_corpus,
-                            content_transformer(removeWords),
-                            stopwords())
-    agenda_corpus <- tm_map(agenda_corpus,
-                            content_transformer(removePunctuation))
-    agenda_corpus <- tm_map(agenda_corpus,
-                            content_transformer(removeNumbers))
-    agenda_corpus <- tm_map(agenda_corpus,
-                            content_transformer(stripWhitespace))
-    agenda_corpus <- tm_map(agenda_corpus,
-                            content_transformer(stemDocument))
-    org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
-    org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
-    org_term_order <- order(org_term_freq)
-    set.seed(1945)
-    all_terms <- length(org_term_freq)
-    omit_last <- 25
-    wordcloud(names(org_term_freq[head(org_term_order,
-                                       n=all_terms-omit_last)]),
-              org_term_freq[head(org_term_order,
-                                 n=all_terms-omit_last)],
-              min.freq=10,
-              colors=brewer.pal(5,"Dark2"))
+## setwd("data")
+## org_files <- dir()
+## corp_to_wordcloud <- function(source_file){
+##     my_source <- readPlain(list("content"=source_file),
+##                            language="en", id="id")
+##     agenda_corpus <- VCorpus(x=my_source,
+##                              readerControl=
+##                                  list(reader = reader(my_source),
+##                                       language = "en"))
+##     agenda_corpus <- tm_map(agenda_corpus,
+##                             content_transformer(removeWords),
+##                             stopwords())
+##     agenda_corpus <- tm_map(agenda_corpus,
+##                             content_transformer(removePunctuation))
+##     agenda_corpus <- tm_map(agenda_corpus,
+##                             content_transformer(removeNumbers))
+##     agenda_corpus <- tm_map(agenda_corpus,
+##                             content_transformer(stripWhitespace))
+##     agenda_corpus <- tm_map(agenda_corpus,
+##                             content_transformer(stemDocument))
+##     org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
+##     org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
+##     org_term_order <- order(org_term_freq)
+##     set.seed(1945)
+##     all_terms <- length(org_term_freq)
+##     omit_last <- 25
+##     wordcloud(names(org_term_freq[head(org_term_order,
+##                                        n=all_terms-omit_last)]),
+##               org_term_freq[head(org_term_order,
+##                                  n=all_terms-omit_last)],
+##               min.freq=10,
+##               colors=brewer.pal(5,"Dark2"))
 }
-lapply(org_files, corp_to_wordcloud)
+##lapply(org_files, corp_to_wordcloud)
 ```
 
 # References
