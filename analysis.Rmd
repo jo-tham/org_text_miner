@@ -10,8 +10,8 @@
 
 # Setup corpus
 
-- At this point I became frustrated with the CamlCase
-  inconsistencies
+- Around here I became frustrated with the CamlCase
+  inconsistencies. Oh well.
 
 ```{r}
 suppressPackageStartupMessages(library(tm))
@@ -29,7 +29,7 @@ agenda_corpus <- VCorpus(x=org_dir_source,
 
 - Structure of the corpus object
 
-```{r}
+```{r, results='hold'}
 typeof(agenda_corpus)
 str(agenda_corpus[1])
 ```
@@ -59,31 +59,30 @@ getTransformations()
 
 ```{r, results='hold'}
 suppressPackageStartupMessages(library(SnowballC))
-lapply(agenda_corpus, nchar)
+lapply(agenda_corpus, nchar)[[1]]
 agenda_corpus <- tm_map(agenda_corpus,
                         content_transformer(removeWords),
                         stopwords())
-#lapply(agenda_corpus, nchar)
 agenda_corpus <- tm_map(agenda_corpus,
                         content_transformer(removePunctuation))
-#lapply(agenda_corpus, nchar)
 agenda_corpus <- tm_map(agenda_corpus,
                         content_transformer(removeNumbers))
-#lapply(agenda_corpus, nchar)
 agenda_corpus <- tm_map(agenda_corpus,
                         content_transformer(stripWhitespace))
-#lapply(agenda_corpus, nchar)
 agenda_corpus <- tm_map(agenda_corpus,
                         content_transformer(stemDocument))
-lapply(agenda_corpus, nchar)
+lapply(agenda_corpus, nchar)[[1]]
 ```
-
+- the transformations working, but removeWords with the org
+  agenda terms wasn't working. A hack is implemented below
+  for wordcloud.
 - future project, pertaining to org specifically, is add
-  custom transformations, e.g.
+  custom transformations, e.g. DONE, TODO, NEXT etc
 
 # Create document term matrix
 - Here's how to imagine a document term matrix
- doc      | word1  | word2 | ... | wordN 
+
+doc       | word1  | word2 | ... | wordN 
 --------- | -------|-------|-----|-------
  doc1.txt | freq11 | freq12| ... | freq1N
  doc2.txt | freq21 | freq22| ... | freq2N
@@ -92,11 +91,13 @@ lapply(agenda_corpus, nchar)
     .     |   .    |    .  |  .  |   .   
  docn.txt | freqn1 | freqn2| ... | freqnN
 
-```{r}
+
+```{r, results='hold'}
 org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
 str(org_doc_term_matrix)
 inspect(org_doc_term_matrix[, 1:10])
 ```
+
 - hmm, would be nice to see most frequent terms.
 
 # Examine document term matrix
@@ -104,8 +105,9 @@ inspect(org_doc_term_matrix[, 1:10])
 ```{r}
 org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
 org_term_order <- order(org_term_freq)
-names(org_term_freq[tail(org_term_order, n=25L)])
+org_term_freq[tail(org_term_order, n=25L)]
 ```
+
 - the org mode todo items are common. Blimey, ive done a lot.
 - It might be intersting to remove them, but it also
   indicates the actionability of my work. Identify tasks and
@@ -116,20 +118,9 @@ names(org_term_freq[tail(org_term_order, n=25L)])
 ```{r}
 findFreqTerms(org_doc_term_matrix, lowfreq=1000)
 findFreqTerms(org_doc_term_matrix, lowfreq=100)
-findFreqTerms(org_doc_term_matrix, lowfreq=10)
+#findFreqTerms(org_doc_term_matrix, lowfreq=10)
 ```
 
-```{r}
-bulk_terms <- findFreqTerms(org_doc_term_matrix, lowfreq=175)
-agenda_corpus_xbulk <- tm_map(agenda_corpus,
-                              content_transformer(removeWords),
-                              bulk_terms, lazy = FALSE)
-lapply(agenda_corpus, nchar)
-lapply(agenda_corpus_xbulk, nchar)
-org_doc_term_matrix_xbulk <- DocumentTermMatrix(agenda_corpus_xbulk)
-org_term_freq_xbulk <- colSums(as.matrix(org_doc_term_matrix_xbulk))
-findFreqTerms(org_doc_term_matrix_xbulk, lowfreq = 100)
-```
 - can also examine word associations, plot associations,
   which I will omit here.
 
@@ -137,18 +128,27 @@ findFreqTerms(org_doc_term_matrix_xbulk, lowfreq = 100)
 
 - I had issues isntalling wordcloud. Github worked, my cran
   mirror (Rstudio) didn't.
+- There's a hack in here to plot only some of the words,
+  since omitting the org bulk words via removeWords didn't
+  work. I heard there's a bug with that if they're at the
+  start of a line, which the org state words usually are.
 
-```{r}
+```{r, warning=FALSE}
 library("wordcloud")
 # set seed so cloud layout fixed
 set.seed(1945)
-par(mfrow=c(2,1))
 wordcloud(names(org_term_freq), org_term_freq,
           min.freq=40,
           colors=brewer.pal(6,"Dark2"))
-wordcloud(names(org_term_freq_xbulk), org_term_freq_xbulk,
-          min.freq=40,
-          colors=brewer.pal(6,"Dark2"))
+org_term_freq[tail(org_term_order, n=25L)]
+all_terms <- length(org_term_freq)
+omit_last <- 25
+wordcloud(names(org_term_freq[head(org_term_order,
+                                   n=all_terms-omit_last)]),
+          org_term_freq[head(org_term_order,
+                             n=all_terms-omit_last)],
+          min.freq=10,
+          colors=brewer.pal(5,"Dark2"))
 ```
 
 # References
