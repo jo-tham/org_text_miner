@@ -1,11 +1,10 @@
 # Get required packages
 
 ```{r, eval=FALSE}
-## library(devtools)
-## install.packages('tm')
-## install.packages("SnowballC")
-## devtools::install_github("cran/wordcloud")
-## help(package="tm")
+library(devtools)
+install.packages('tm')
+install.packages("SnowballC")
+devtools::install_github("cran/wordcloud")
 ```
 
 # Setup corpus
@@ -86,9 +85,7 @@ doc       | word1  | word2 | ... | wordN
 --------- | -------|-------|-----|-------
  doc1.txt | freq11 | freq12| ... | freq1N
  doc2.txt | freq21 | freq22| ... | freq2N
-    .     |   .    |    .  |  .  |   .   
-    .     |   .    |    .  |  .  |   .   
-    .     |   .    |    .  |  .  |   .   
+   ....   |   ...  | ..... | ... | ..... 
  docn.txt | freqn1 | freqn2| ... | freqnN
 
 
@@ -149,6 +146,45 @@ wordcloud(names(org_term_freq[head(org_term_order,
                              n=all_terms-omit_last)],
           min.freq=10,
           colors=brewer.pal(5,"Dark2"))
+```
+
+# Again, for each agenda file
+
+```{r}
+setwd("data")
+org_files <- dir()
+corp_to_wordcloud <- function(source_file){
+    my_source <- readPlain(list("content"=source_file),
+                           language="en", id="id")
+    agenda_corpus <- VCorpus(x=my_source,
+                             readerControl=
+                                 list(reader = reader(my_source),
+                                      language = "en"))
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(removeWords),
+                            stopwords())
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(removePunctuation))
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(removeNumbers))
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(stripWhitespace))
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(stemDocument))
+    org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
+    org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
+    org_term_order <- order(org_term_freq)
+    set.seed(1945)
+    all_terms <- length(org_term_freq)
+    omit_last <- 25
+    wordcloud(names(org_term_freq[head(org_term_order,
+                                       n=all_terms-omit_last)]),
+              org_term_freq[head(org_term_order,
+                                 n=all_terms-omit_last)],
+              min.freq=10,
+              colors=brewer.pal(5,"Dark2"))
+}
+lapply(org_files, corp_to_wordcloud)
 ```
 
 # References
