@@ -1,8 +1,11 @@
 # Get required packages
 
 ```{r, eval=FALSE}
-install.packages('tm')
-help(package="tm")
+## library(devtools)
+## install.packages('tm')
+## install.packages("SnowballC")
+## devtools::install_github("cran/wordcloud")
+## help(package="tm")
 ```
 
 # Setup corpus
@@ -54,26 +57,29 @@ getTransformations()
   with the stemming algorithm. I'll assume it's OK for this
   exercise.
 
-```{r}
+```{r, results='hold'}
 suppressPackageStartupMessages(library(SnowballC))
-agenda_corpus <- tm_map(agenda_corpus, removeWords, stopwords())
-agenda_corpus <- tm_map(agenda_corpus, removePunctuation)
-agenda_corpus <- tm_map(agenda_corpus, removeNumbers)
-agenda_corpus <- tm_map(agenda_corpus, stripWhitespace)
-agenda_corpus <- tm_map(agenda_corpus, stemDocument)
+lapply(agenda_corpus, nchar)
+agenda_corpus <- tm_map(agenda_corpus,
+                        content_transformer(removeWords),
+                        stopwords())
+#lapply(agenda_corpus, nchar)
+agenda_corpus <- tm_map(agenda_corpus,
+                        content_transformer(removePunctuation))
+#lapply(agenda_corpus, nchar)
+agenda_corpus <- tm_map(agenda_corpus,
+                        content_transformer(removeNumbers))
+#lapply(agenda_corpus, nchar)
+agenda_corpus <- tm_map(agenda_corpus,
+                        content_transformer(stripWhitespace))
+#lapply(agenda_corpus, nchar)
+agenda_corpus <- tm_map(agenda_corpus,
+                        content_transformer(stemDocument))
+lapply(agenda_corpus, nchar)
 ```
 
 - future project, pertaining to org specifically, is add
   custom transformations, e.g.
-
-```{r, eval=FALSE}
-# although this is the same as removeWords transformation
-for (j in seq(docs)){
-  docs[[j]]<-gsub("TODO"," ", docs[[j]])
-  docs[[j]]<-gsub("NEXT"," ", docs[[j]])
-  docs[[j]]<-gsub("DONE"," ", docs[[j]])
-}
-```
 
 # Create document term matrix
 - Here's how to imagine a document term matrix
@@ -98,27 +104,34 @@ inspect(org_doc_term_matrix[, 1:10])
 ```{r}
 org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
 org_term_order <- order(org_term_freq)
-org_terms <- names(org_term_freq[tail(org_term_order, n=25L)])
-org_terms
-agenda_corpus_xorg <- tm_map(agenda_corpus, removeWords,
-                             org_terms)
-proj_doc_term_matrix <- DocumentTermMatrix(agenda_corpus_xorg)
-proj_term_freq <- colSums(as.matrix(proj_doc_term_matrix))
+names(org_term_freq[tail(org_term_order, n=25L)])
 ```
 - the org mode todo items are common. Blimey, ive done a lot.
 - It might be intersting to remove them, but it also
   indicates the actionability of my work. Identify tasks and
   execute.
-- more examining reveals many other semi-useless workds in
+- more examining reveals many other semi-useless words in
   top 50+ words
 
 ```{r}
-findFreqTerms(proj_doc_term_matrix, lowfreq=1000)
-findFreqTerms(proj_doc_term_matrix, lowfreq=100)
-findFreqTerms(proj_doc_term_matrix, lowfreq=10)
+findFreqTerms(org_doc_term_matrix, lowfreq=1000)
+findFreqTerms(org_doc_term_matrix, lowfreq=100)
+findFreqTerms(org_doc_term_matrix, lowfreq=10)
 ```
 
+```{r}
+bulk_terms <- findFreqTerms(org_doc_term_matrix, lowfreq=175)
+agenda_corpus_xbulk <- tm_map(agenda_corpus,
+                              content_transformer(removeWords),
+                              bulk_terms, lazy = FALSE)
+lapply(agenda_corpus, nchar)
+lapply(agenda_corpus_xbulk, nchar)
+org_doc_term_matrix_xbulk <- DocumentTermMatrix(agenda_corpus_xbulk)
+org_term_freq_xbulk <- colSums(as.matrix(org_doc_term_matrix_xbulk))
+findFreqTerms(org_doc_term_matrix_xbulk, lowfreq = 100)
+```
 - can also examine word associations, plot associations,
+  which I will omit here.
 
 # Plot wordcloud
 
@@ -129,7 +142,11 @@ findFreqTerms(proj_doc_term_matrix, lowfreq=10)
 library("wordcloud")
 # set seed so cloud layout fixed
 set.seed(1945)
-wordcloud(names(proj_term_freq), proj_term_freq,
+par(mfrow=c(2,1))
+wordcloud(names(org_term_freq), org_term_freq,
+          min.freq=40,
+          colors=brewer.pal(6,"Dark2"))
+wordcloud(names(org_term_freq_xbulk), org_term_freq_xbulk,
           min.freq=40,
           colors=brewer.pal(6,"Dark2"))
 ```
