@@ -11,13 +11,15 @@ devtools::install_github("cran/wordcloud")
 
 - Around here I became frustrated with the CamlCase
   inconsistencies. Oh well.
+- The recursive argument doesn't seem to work, either.
+  Something to investigate.
 
 ```{r}
 suppressPackageStartupMessages(library(tm))
 project_dir <- "~/projects/9999-99-99_master_text_miner"
 setwd(project_dir)
 org_dir <- "~/projects/9999-99-99_master_text_miner/data"
-org_dir_source <- DirSource(org_dir)
+org_dir_source <- DirSource(org_dir, recursive = FALSE)
 agenda_corpus <- VCorpus(x=org_dir_source,
                          readerControl=
                              list(reader = reader(org_dir_source),
@@ -115,7 +117,6 @@ org_term_freq[tail(org_term_order, n=25L)]
 ```{r}
 findFreqTerms(org_doc_term_matrix, lowfreq=1000)
 findFreqTerms(org_doc_term_matrix, lowfreq=100)
-#findFreqTerms(org_doc_term_matrix, lowfreq=10)
 ```
 
 - can also examine word associations, plot associations,
@@ -127,7 +128,7 @@ findFreqTerms(org_doc_term_matrix, lowfreq=100)
   mirror (Rstudio) didn't.
 - There's a hack in here to plot only some of the words,
   since omitting the org bulk words via removeWords didn't
-  work. I heard there's a bug with that if they're at the
+  work. I heard there's a bug with removeWords if they're at the
   start of a line, which the org state words usually are.
 
 ```{r, warning=FALSE}
@@ -144,7 +145,7 @@ wordcloud(names(org_term_freq[head(org_term_order,
                                    n=all_terms-omit_last)]),
           org_term_freq[head(org_term_order,
                              n=all_terms-omit_last)],
-          min.freq=10,
+          min.freq=15,
           colors=brewer.pal(5,"Dark2"))
 ```
 

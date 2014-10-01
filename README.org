@@ -2,6 +2,7 @@
   - [ ] removeWords not working. wrong argument? trying to
     remove common organizational words
 
+
 * Background
 I implement something like GTD ('getting things done')
 personal organization system with EMACS Org mode. I thought
@@ -10,7 +11,7 @@ I'm usually up to. Because when asked, I always think,
 'well, I dunno - it's in my org files/agenda. I find it hard to put all
 of it in accessible memory, if you will. I just execute it.'.
 
-This will work more widely, on any text corpus. But perhaps
+This would work more widely, on any text corpus. But perhaps
 I'll author an R package to do some operations on org agenda
 files for meaningful text mining after.
 
@@ -40,10 +41,15 @@ echo 'data/*' >> .gitignore
 
 
 * Symlink org files
+  - putting them in subdirectories so it's easier to create
+    analysis per file, as the sourcing of single files into
+    corpus is difficult with the R tm package
+  - also put all in the root data directory for the combined
+    analysis, since recursive argument dir dirSource is
+    failing me
   - symlink to all org files
-    - in the future could do all org files on machine
-    - even do all org files on machine into the
-      corresponding subdirs from root and build the corpus 
+    - in the future could do all org files on machine by
+      using a find command
 
 #+begin_src sh
 ln -s ~/projects/9999-99-99_master/*.org ~/projects/9999-99-99_master_text_miner/data
@@ -51,14 +57,26 @@ ls -a ~/projects/9999-99-99_master_text_miner/data
 #+end_src
 
 #+RESULTS:
-|------------------|
+| .                |
+| ..               |
 | computing.org    |
 | fynanse.org      |
 | personal.org     |
 | physical.org     |
+| professional.org |
 | reading.org      |
 | website.org      |
-|------------------|
+
+#+begin_src sh
+cd ~/projects/9999-99-99_master
+for i in *.org; do
+projDir="/home/$USER/projects/9999-99-99_master_text_miner/data/$i"
+projDirXext="${projDir%.org}"
+mkdir -p -- "$projDirXext" && ln -s "$i" "$projDirXext/$i"
+done
+#+end_src
+
+#+RESULTS:
 
 
 * References/acknowledgements
