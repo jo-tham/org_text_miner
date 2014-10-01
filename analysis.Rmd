@@ -1,3 +1,7 @@
+---
+output: md_document
+---
+
 # Get required packages
 
 ```{r, eval=FALSE}
@@ -133,7 +137,6 @@ findFreqTerms(org_doc_term_matrix, lowfreq=100)
 
 ```{r, warning=FALSE}
 library("wordcloud")
-# set seed so cloud layout fixed
 set.seed(1945)
 wordcloud(names(org_term_freq), org_term_freq,
           min.freq=40,
@@ -149,9 +152,9 @@ wordcloud(names(org_term_freq[head(org_term_order,
           colors=brewer.pal(5,"Dark2"))
 ```
 
-# Finally, individual org files
+# Finally, make wordclouds for individual org agenda files
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, echo=FALSE}
 setwd("data")
 org_dirs <- dir()[!grepl(".org",dir())]
 corp_to_wordcloud <- function(top_dir){
@@ -186,12 +189,8 @@ corp_to_wordcloud <- function(top_dir){
     invisible(NULL)
 }
 lapply(org_dirs, corp_to_wordcloud)
-```
 
-# References
-- http://onepager.togaware.com/TextMiningO.pdf
-- http://cran.r-project.org/web/packages/tm/vignettes/tm.pdf
-- 
+```
 
 # Next time
 - Try with python's nltk
@@ -199,4 +198,8 @@ lapply(org_dirs, corp_to_wordcloud)
   a null case (some generic books, dictionary, i don't know
   what) might be more interesting
 - Trim terms using in inflection points on the ordered terms
-  vs frequency relationshipo
+  vs frequency relationship
+
+# References
+- http://onepager.togaware.com/TextMiningO.pdf
+- http://cran.r-project.org/web/packages/tm/vignettes/tm.pdf
