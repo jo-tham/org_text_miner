@@ -183,11 +183,17 @@ wordcloud(names(org_term_freq[head(org_term_order,
 ##                                  n=all_terms-omit_last)],
 ##               min.freq=10,
 ##               colors=brewer.pal(5,"Dark2"))
-}
-##lapply(org_files, corp_to_wordcloud)
+## }
+## lapply(org_files, corp_to_wordcloud)
 ```
 
 # References
 - http://onepager.togaware.com/TextMiningO.pdf
 - http://cran.r-project.org/web/packages/tm/vignettes/tm.pdf
 - 
+
+# Next time
+- Try with python's nltk
+- I think some normalization of the word frequencies against
+  a null case (some generic books, dictionary, i don't know
+  what) might be more interesting

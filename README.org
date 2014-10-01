@@ -7,20 +7,12 @@ I implement something like GTD ('getting things done')
 personal organization system with EMACS Org mode. I thought
 it'd be useful to mine my agenda files for a summary of what
 I'm usually up to. Because when asked, I always think,
-'well, I dunno - it's in my EMACS. I don't have to think
-about it only execute it.'. 
+'well, I dunno - it's in my org files/agenda. I find it hard to put all
+of it in accessible memory, if you will. I just execute it.'.
 
 This will work more widely, on any text corpus. But perhaps
 I'll author an R package to do some operations on org agenda
 files for meaningful text mining after.
-
-
-* Create org file for notes
-  - shortcut to insert code block demarcaters is C-c C-v d
-
-#+begin_src sh
-touch README.org
-#+end_src
 
 
 * Setup data and readme
@@ -47,7 +39,7 @@ echo 'data/*' >> .gitignore
 #+end_src
 
 
-* Next step
+* Symlink org files
   - symlink to all org files
     - in the future could do all org files on machine
     - even do all org files on machine into the
@@ -64,7 +56,6 @@ ls -a ~/projects/9999-99-99_master_text_miner/data
 | fynanse.org      |
 | personal.org     |
 | physical.org     |
-| professional.org |
 | reading.org      |
 | website.org      |
 |------------------|
