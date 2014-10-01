@@ -72,7 +72,7 @@ cd ~/projects/9999-99-99_master
 for i in *.org; do
 projDir="/home/$USER/projects/9999-99-99_master_text_miner/data/$i"
 projDirXext="${projDir%.org}"
-mkdir -p -- "$projDirXext" && ln -s "$i" "$projDirXext/$i"
+mkdir -p -- "$projDirXext" && cp "$i" "$projDirXext/$i"
 done
 #+end_src
 

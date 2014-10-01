@@ -149,43 +149,43 @@ wordcloud(names(org_term_freq[head(org_term_order,
           colors=brewer.pal(5,"Dark2"))
 ```
 
-# Again, for each agenda file
+# Finally, individual org files
 
-```{r}
-## setwd("data")
-## org_files <- dir()
-## corp_to_wordcloud <- function(source_file){
-##     my_source <- readPlain(list("content"=source_file),
-##                            language="en", id="id")
-##     agenda_corpus <- VCorpus(x=my_source,
-##                              readerControl=
-##                                  list(reader = reader(my_source),
-##                                       language = "en"))
-##     agenda_corpus <- tm_map(agenda_corpus,
-##                             content_transformer(removeWords),
-##                             stopwords())
-##     agenda_corpus <- tm_map(agenda_corpus,
-##                             content_transformer(removePunctuation))
-##     agenda_corpus <- tm_map(agenda_corpus,
-##                             content_transformer(removeNumbers))
-##     agenda_corpus <- tm_map(agenda_corpus,
-##                             content_transformer(stripWhitespace))
-##     agenda_corpus <- tm_map(agenda_corpus,
-##                             content_transformer(stemDocument))
-##     org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
-##     org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
-##     org_term_order <- order(org_term_freq)
-##     set.seed(1945)
-##     all_terms <- length(org_term_freq)
-##     omit_last <- 25
-##     wordcloud(names(org_term_freq[head(org_term_order,
-##                                        n=all_terms-omit_last)]),
-##               org_term_freq[head(org_term_order,
-##                                  n=all_terms-omit_last)],
-##               min.freq=10,
-##               colors=brewer.pal(5,"Dark2"))
-## }
-## lapply(org_files, corp_to_wordcloud)
+```{r, warning=FALSE}
+setwd("data")
+org_dirs <- dir()[!grepl(".org",dir())]
+corp_to_wordcloud <- function(top_dir){
+    dir_source <- DirSource(top_dir)
+    agenda_corpus <- VCorpus(x=dir_source,
+                             readerControl=
+                                 list(reader = reader(dir_source),
+                                      language = "en"))
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(removeWords),
+                            stopwords())
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(removePunctuation))
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(removeNumbers))
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(stripWhitespace))
+    agenda_corpus <- tm_map(agenda_corpus,
+                            content_transformer(stemDocument))
+    org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
+    org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
+    org_term_order <- order(org_term_freq)
+    set.seed(1945)
+    all_terms <- length(org_term_freq)
+    omit_last <- 15
+    wordcloud(names(org_term_freq[head(org_term_order,
+                                       n=all_terms-omit_last)]),
+              org_term_freq[head(org_term_order,
+                                 n=all_terms-omit_last)],
+              min.freq=15,
+              colors=brewer.pal(5,"Dark2"), main=dir_source)
+    invisible(NULL)
+}
+lapply(org_dirs, corp_to_wordcloud)
 ```
 
 # References
@@ -198,3 +198,5 @@ wordcloud(names(org_term_freq[head(org_term_order,
 - I think some normalization of the word frequencies against
   a null case (some generic books, dictionary, i don't know
   what) might be more interesting
+- Trim terms using in inflection points on the ordered terms
+  vs frequency relationshipo
