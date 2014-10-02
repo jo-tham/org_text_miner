@@ -1,12 +1,3 @@
-* Background
-I implement something like GTD ('getting things done')
-personal organization system with EMACS Org mode. I thought
-it'd be useful to mine my agenda files for a summary of what
-I'm usually up to. Because when asked, I always think,
-'well, I dunno - it's in my org files/agenda. I find it hard to put all
-of it in accessible memory, if you will. I just execute it.'.
-
-
 * Setup data and readme
   - /data for data (in my case, symlinks to org files)
   - README.rmd
