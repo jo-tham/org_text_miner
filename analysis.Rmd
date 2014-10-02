@@ -1,5 +1,7 @@
 ---
-output: md_document
+output:
+  md_document:
+    variant: markdown_github
 ---
 
 # Get required packages
@@ -189,7 +191,6 @@ corp_to_wordcloud <- function(top_dir){
                                  n=all_terms-omit_last)],
               min.freq=15,
               colors=brewer.pal(5,"Dark2"), main=dir_source)
-    invisible(NULL)
 }
 lapply(org_dirs, corp_to_wordcloud)
 
