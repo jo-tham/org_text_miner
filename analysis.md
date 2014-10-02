@@ -43,7 +43,7 @@ Inspect the corpus
     ##   ..$ content: chr [1:4509] "* Document appearance and settings" "#+LINK: google    http://www.google.com/search?q=%s" "#+TAGS: install(i) sysupdate(s) bug(b) config(c) laptop(l) desktop(d)" "#+DRAWERS: CODE HIDDEN" ...
     ##   ..$ meta   :List of 7
     ##   .. ..$ author       : chr(0) 
-    ##   .. ..$ datetimestamp: POSIXlt[1:1], format: "2014-10-01 23:25:37"
+    ##   .. ..$ datetimestamp: POSIXlt[1:1], format: "2014-10-02 10:20:41"
     ##   .. ..$ description  : chr(0) 
     ##   .. ..$ heading      : chr(0) 
     ##   .. ..$ id           : chr "computing.org"
@@ -252,6 +252,9 @@ Plot wordcloud
 <!-- -->
 
     library("wordcloud")
+
+    ## Loading required package: RColorBrewer
+
     set.seed(1945)
     wordcloud(names(org_term_freq), org_term_freq,
               min.freq=40,
@@ -286,6 +289,46 @@ unnamed-chunk-10](./analysis_files/figure-markdown_strict/unnamed-chunk-102.png)
 Finally, make wordclouds for individual org agenda files
 ========================================================
 
+-   I've omitted some of the plots for brevity and privacy!
+
+<!-- -->
+
+    setwd("data")
+    org_dirs <- dir()[!grepl(".org",dir())]
+    org_dirs
+    corp_to_wordcloud <- function(top_dir){
+        dir_source <- DirSource(top_dir)
+        agenda_corpus <- VCorpus(x=dir_source,
+                                 readerControl=
+                                     list(reader = reader(dir_source),
+                                          language = "en"))
+        agenda_corpus <- tm_map(agenda_corpus,
+                                content_transformer(removeWords),
+                                stopwords())
+        agenda_corpus <- tm_map(agenda_corpus,
+                                content_transformer(removePunctuation))
+        agenda_corpus <- tm_map(agenda_corpus,
+                                content_transformer(removeNumbers))
+        agenda_corpus <- tm_map(agenda_corpus,
+                                content_transformer(stripWhitespace))
+        agenda_corpus <- tm_map(agenda_corpus,
+                                content_transformer(stemDocument))
+        org_doc_term_matrix <- DocumentTermMatrix(agenda_corpus)
+        org_term_freq <- colSums(as.matrix(org_doc_term_matrix))
+        org_term_order <- order(org_term_freq)
+        set.seed(1945)
+        all_terms <- length(org_term_freq)
+        omit_last <- 15
+        wordcloud(names(org_term_freq[head(org_term_order,
+                                           n=all_terms-omit_last)]),
+                  org_term_freq[head(org_term_order,
+                                     n=all_terms-omit_last)],
+                  min.freq=15,
+                  colors=brewer.pal(5,"Dark2"), main=dir_source)
+        invisible(NULL)
+    }
+    lapply(org_dirs, corp_to_wordcloud)
+
 ![plot of chunk
 unnamed-chunk-11](./analysis_files/figure-markdown_strict/unnamed-chunk-111.png)
 ![plot of chunk
@@ -300,6 +343,9 @@ unnamed-chunk-11](./analysis_files/figure-markdown_strict/unnamed-chunk-115.png)
 unnamed-chunk-11](./analysis_files/figure-markdown_strict/unnamed-chunk-116.png)
 ![plot of chunk
 unnamed-chunk-11](./analysis_files/figure-markdown_strict/unnamed-chunk-117.png)
+
+    ## [1] "computing"    "fynanse"      "personal"     "physical"    
+    ## [5] "professional" "reading"      "website"
 
     ## [[1]]
     ## NULL
@@ -325,12 +371,13 @@ unnamed-chunk-11](./analysis_files/figure-markdown_strict/unnamed-chunk-117.png)
 Next time
 =========
 
--   Try with python's nltk
+-   Try python's nltk
 -   I think some normalization of the word frequencies against a null
     case (some generic books, dictionary, i don't know what) might be
     more interesting
 -   Trim terms using in inflection points on the ordered terms vs
     frequency relationship
+-   Animate the wordclouds of the individual org agenda files
 
 References
 ==========
