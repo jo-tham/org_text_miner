@@ -22,7 +22,7 @@ echo 'data/*' >> .gitignore
 #+end_src
 
 
-* Symlink org files
+* Update Org files 
   - putting them in subdirectories so it's easier to create
     analysis per file, as the sourcing of single files into
     corpus is difficult with the R tm package
